@@ -13,11 +13,11 @@ import java.util.Scanner;
 public class ChangingMachine {
 	
 	/*
-	 * @param amount is a number for which change needed to be calculated
-	 * @return billsNumber is a minimum number of bills
+	 * @param amount, number for which change needed to be calculated
+	 * @return billsNumber, minimum number of bills
 	 * 
-	 * Also, I thought to implement data class with property amount and array int[6] denominations, where 0s positions is hundreds,...
-	 * in a way that after line 39 I could add transation.denomination[i] = multiplier, but it is not specified by the task, and could be considered as over-engineering
+	 * Also, I thought to implement data class with property amount and array int[6] denominations, where 0 position is number of hundreds,...
+	 * in a way that after line 40 I could add transation.denomination[i] = multiplier, but it is not specified by the task, and could be considered as over-engineering
 	 */
 	public static int makeChange(int amount){
 		if (amount < 0 || amount == 0) return 0;
@@ -31,7 +31,7 @@ public class ChangingMachine {
 		
 		//goes through each domination
 		for(int i : denominations){
-		// if remainingAmount equals to 44 but i is 50, there is no point to go further since multiplier will be 0
+			// if remainingAmount equals to 44 but i is 50, there is no point to go further since multiplier will be 0
 			// this will avoid empty cycle
 			if (remainingAmount >= i) {
 				// calculating multiplier
