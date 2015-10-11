@@ -22,11 +22,11 @@ Questions about the task:
   														   and decrease size of the heap?
 Notes:
   TinyFree() I understood as a removing node by index, and than re-balance.
-  Also, do we consider 0 as freed memory? (Since when new array created, it consist only form 0s)
-  After TinyFree() execution should I remove 0s, or not? (I thought no)
-  Implemented in array representation, since as I wrote in letter other version I did before.
+  Also, do we consider 0 as a freed memory? (Since when new array created, it consist only form 0s, I do not think so.)
+  After TinyFree() execution should I remove 0s, or not? (I thought no.)
+  Task implemented in array representation, since as I wrote in letter other version I did before (with my own class-structure).
   I took into considerations other ways of implementation, for instance, Fibonacci method, but as Robert Sedgewick 
-  mentioned: "Such advanced data structure usually is too complex for usage".  
+  mentioned: "Such advanced data structure usually is too complex for usage". Also, it would take more more time.  
  */
 
 public class MinHeap {
@@ -74,15 +74,17 @@ public class MinHeap {
     /*
      * one of possible TinyAlloc methods 
      * increases heap capacity
-     * @param bytes shows on how many bytes heap should be increased
+     * @param bytes shows how many bytes should be added to the heap
      */
     public void addHeapCapacity(int bytes){
+    	/* checks if not empty or negative */
     	if (bytes < 0 || bytes == 0) {
     		System.err.println("Expected int > 0, got " + bytes + "."); 
     		return;
     	}
     	
     	try {
+    		/* copies new array with bigger size */
     		this.heap = Arrays.copyOf(this.heap, bytes + this.heap.length);
     	} catch (OutOfMemoryError e) {
     	    System.err.println(e.getMessage() + ", can not increase buffer size.");
@@ -121,10 +123,9 @@ public class MinHeap {
     /*
      * one of possible TinyAlloc methods
      * adds one value at a time
-     * if there is a place in a heap, new element is added to the end of a heap
-     * after that swapping according heap rule executes recursively
-     * @param newValue 
-     * @throws IllegalArgumentException if bytes # is not positive
+     * if there is a place in a heap, new element is added to the end of the heap
+     * after that swaps according heap rule executes recursively
+     * @param newValue, new value
      */
     public void add(byte newValue) {
         if (this.size == this.heap.length) {
@@ -140,17 +141,16 @@ public class MinHeap {
     /*
      * adds values from array to heap
      * if the there is a place in a heap all elements are added to the end of a heap
-     * after that swapping according heap rule executes recursively beginning from the root
-     * @param newValues is an array of new values
-     * @throws IllegalArgumentException if bytes # is not positive
+     * after that swaps according heap rule executes recursively beginning from the root
+     * @param newValues, an array of new values
      */
-    public void add(byte[] newValues) throws NullPointerException, IllegalArgumentException {
+    public void add(byte[] newValues) {
     	if (newValues == null){
     		System.err.println("Inserting array is empty.");
     		return;
     	}
     	
-    	/* checking if new array will fit */
+    	/* checks if new array will fit */
     	if (newValues.length > 0 && newValues.length + this.size < this.heap.length) {
     	    System.arraycopy(newValues, 0, this.heap, this.size, newValues.length);
     	    this.size += newValues.length;
@@ -165,8 +165,7 @@ public class MinHeap {
     }
  
     /*
-     * siftUp also know as trickle, heapify, bubble or percolate (choose current name since wiki uses it)
-     * 
+     * siftUp also know as trickle, heapify, bubble or percolate (choose current name, since wiki uses it)
      * @param k is an index of element in a heap
      */
 	private void siftUp(int k) {
@@ -179,9 +178,13 @@ public class MinHeap {
               /* checks if parent is bigger than current node */
               if (heap[parentIndex] > heap[k]) {
             	/* swaps values, and siftsUp */
+            	/* we can same one variable memory allocation, using: x=x+y; y=x-y; x=x-y; but then casting needed
+            	 * in ruby it is possible to write: a, b = b, a
+            	 */
 				tmp = heap[parentIndex];
                 heap[parentIndex] = heap[k];
                 heap[k] = tmp;
+                
                 siftUp(parentIndex);
               }
         }
@@ -189,17 +192,17 @@ public class MinHeap {
 	
 	/*
 	 * removes minimum value, which in our heap is a root
-	 * after that moves last element to root & decreasing size & sifting down new root
+	 * after that moves last element to root & decreases size & sifts down new root
 	 */
 	public void removeMin() {
         if (isEmpty()) {
         	System.err.println("Heap is empty.");
 		} else {
-			/* assigning last element to root and removing last element's value */
+			/* assigns last element to the root and removes last element's value */
 			heap[0] = heap[size - 1];
             heap[size - 1] = 0;
             size--;
-            /* checks if the is point to siftDown */
+            /* checks if there is a point to siftDown */
             if (size > 0) {
             	siftDown(0);
             }
@@ -215,7 +218,7 @@ public class MinHeap {
 	}
 
 	/*
-	 * 
+	 * checks & fixes heap rule 
 	 * @param k is an index of element in a heap
 	 */
 	private void siftDown(int k) {
@@ -237,18 +240,19 @@ public class MinHeap {
         	tmp = heap[minIndex];
             heap[minIndex] = heap[k];
             heap[k] = tmp;
+            
             siftDown(minIndex);
         }
 	}
 	
 	/*
 	 * removes element from heap by removing element from array
-	 * @param k index of element which will be removed
+	 * @param k, index of element which will be removed
 	 */
 	public void tinyFree(int k) {
 		if ((k < 0) || (k > this.size - 1)) System.err.println("There is no such index in heap, expected int > 0, got " + k + ".");
 		
-		/* calculating where to cut array */
+		/* calculates where to cut array */
 		int cutPosition = this.size - k;
 		
 		/* checks if element is in the end of array */
