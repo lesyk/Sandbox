@@ -41,7 +41,7 @@ public class MinHeap {
      * heap getter
      */
     public byte[] getHeap(){
-    	return heap;
+    	return this.heap;
     }
     
     /* size of the heap */
@@ -62,13 +62,13 @@ public class MinHeap {
 	 */
     public void allocTinyHeap(int bytes) {
     	try {
-			this.heap = new byte[bytes];
+			heap = new byte[bytes];
 		} catch (OutOfMemoryError | NegativeArraySizeException e) {
 		    System.err.println("Expected int > 0, within JAVA array bounds requirements, got "+ bytes +". Changing array size to " + DEF_CAPACITY + ".");
-		    this.heap = new byte[DEF_CAPACITY];
+		    heap = new byte[DEF_CAPACITY];
 		}
 		
-    	this.size = 0;
+    	size = 0;
     }
     
     /*
@@ -85,7 +85,7 @@ public class MinHeap {
     	
     	try {
     		/* copies new array with bigger size */
-    		this.heap = Arrays.copyOf(this.heap, bytes + this.heap.length);
+    		heap = Arrays.copyOf(heap, bytes + heap.length);
     	} catch (OutOfMemoryError e) {
     	    System.err.println(e.getMessage() + ", can not increase buffer size.");
     	}
@@ -96,8 +96,8 @@ public class MinHeap {
      * GC handle rest 
      */
     public void deleteTinyHeap() {
-		this.heap = null;
-		this.size = 0;
+		heap = null;
+		size = 0;
 	}
    
     /*
@@ -128,12 +128,12 @@ public class MinHeap {
      * @param newValue, new value
      */
     public void add(byte newValue) {
-        if (this.size == this.heap.length) {
+        if (size == heap.length) {
         	System.err.println("Heap is full, can not insert more values.");
     	}else{
-    		this.size++;
-    		this.heap[this.size - 1] = newValue;
-            siftUp(this.size - 1);
+    		size++;
+    		heap[size - 1] = newValue;
+            siftUp(size - 1);
         }
   	}
     
@@ -145,18 +145,18 @@ public class MinHeap {
      * @param newValues, an array of new values
      */
     public void add(byte[] newValues) {
-    	if (newValues == null){
+    	if (newValues == null) {
     		System.err.println("Inserting array is empty.");
     		return;
     	}
     	
     	/* checks if new array will fit */
-    	if (newValues.length > 0 && newValues.length + this.size < this.heap.length) {
-    	    System.arraycopy(newValues, 0, this.heap, this.size, newValues.length);
-    	    this.size += newValues.length;
+    	if (newValues.length > 0 && newValues.length + size < heap.length) {
+    	    System.arraycopy(newValues, 0, heap, size, newValues.length);
+    	    size += newValues.length;
 
     	    // check and fix heap rule
-    	    for (int i = 0; i < this.size; i++) {
+    	    for (int i = 0; i < size; i++) {
     	    	siftUp(i);
     	    }
     	} else{
@@ -174,9 +174,9 @@ public class MinHeap {
         
         /* if root nothing to do */
         if (k != 0) {
-              parentIndex = getParentIndex(k);
-              /* checks if parent is bigger than current node */
-              if (heap[parentIndex] > heap[k]) {
+        	parentIndex = getParentIndex(k);
+            /* checks if parent is bigger than current node */
+            if (heap[parentIndex] > heap[k]) {
             	/* swaps values, and siftsUp */
             	/* we can same one variable memory allocation, using: x=x+y; y=x-y; x=x-y; but then casting needed
             	 * in ruby it is possible to write: a, b = b, a
@@ -186,7 +186,7 @@ public class MinHeap {
                 heap[k] = tmp;
                 
                 siftUp(parentIndex);
-              }
+             }
         }
 	}
 	
@@ -227,10 +227,11 @@ public class MinHeap {
         leftChildIndex = getLeftChildIndex(k);
         rightChildIndex = getRightChildIndex(k);
         if (rightChildIndex >= size) {
-        	if (leftChildIndex >= size)
+        	if (leftChildIndex >= size) {
         		return;
-        	else
+        	} else {
         		minIndex = leftChildIndex;
+        	}
         } else {
         	/* compares which child's value is smaller */
         	minIndex = heap[leftChildIndex] <= heap[rightChildIndex] ? leftChildIndex : rightChildIndex;
@@ -250,24 +251,24 @@ public class MinHeap {
 	 * @param k, index of element which will be removed
 	 */
 	public void tinyFree(int k) {
-		if ((k < 0) || (k > this.size - 1)) System.err.println("There is no such index in heap, expected int > 0, got " + k + ".");
+		if ((k < 0) || (k > size - 1)) System.err.println("There is no such index in heap, expected int > 0, got " + k + ".");
 		
 		/* calculates where to cut array */
-		int cutPosition = this.size - k;
+		int cutPosition = size - k;
 		
 		/* checks if element is in the end of array */
 		if (cutPosition > 0) {
-		    // creates new empty array
-		    byte[] newHeapArray = new byte[this.heap.length];
+			// creates new empty array
+		    byte[] newHeapArray = new byte[heap.length];
 		    
 		    /* copies first part of array */
-		    System.arraycopy(this.heap, 0, newHeapArray, 0, k);
+		    System.arraycopy(heap, 0, newHeapArray, 0, k);
 		    
 		    /* copies second part of array */
-		    System.arraycopy(this.heap, k + 1, newHeapArray, k, cutPosition);
-		    this.heap = newHeapArray;
+		    System.arraycopy(heap, k + 1, newHeapArray, k, cutPosition);
+		    heap = newHeapArray;
 		} else {
-		    this.heap = Arrays.copyOf(this.heap, this.size);
+		    heap = Arrays.copyOf(heap, size);
 		}
 	}
 
